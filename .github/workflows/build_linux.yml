@@ -116,5 +116,5 @@ jobs:
 
     - name: Load custom feeds
       run: |
-        $GITHUB_WORKSPACE/source env.sh
+        source $GITHUB_WORKSPACE/env.sh
         $GITHUB_WORKSPACE/build_linux.sh
