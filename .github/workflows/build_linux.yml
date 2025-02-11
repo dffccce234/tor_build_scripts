@@ -11,6 +11,8 @@ env:
   # REPO_URL: https://github.com/dffccce234/tor_build_scripts
   REPO_BRANCH: master
   TZ: Asia/Shanghai
+  UPLOAD_FIRMWARE: 'true'
+  
 
 jobs:
   build:
@@ -114,11 +116,13 @@ jobs:
     #     mixkey: 'x86'
     #     prefix: 'openwrt'
 
-    - name: build tor
+    - name: compile tor
+      id: compile
       run: |
         source $GITHUB_WORKSPACE/env.sh
         $GITHUB_WORKSPACE/build_linux.sh
-
+        echo "status=success" >> $GITHUB_OUTPUT
+        
     - name: Organize files
       id: organize
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
