@@ -11,7 +11,7 @@ env:
   # REPO_URL: https://github.com/dffccce234/tor_build_scripts
   REPO_BRANCH: master
   TZ: Asia/Shanghai
-  UPLOAD_FIRMWARE: 'true'
+  UPLOAD_BINARY: 'true'
   
 
 jobs:
@@ -125,18 +125,18 @@ jobs:
         
     - name: Organize files
       id: organize
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BINARY == 'true' && !cancelled()
       run: |
         cd $GITHUB_WORKSPACE
-        echo "FIRMWARE=tor-$TOR_VERSION-linux" >> $GITHUB_ENV
+        echo "BINARY=tor-$TOR_VERSION-linux" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: Upload firmware directory
+    - name: Upload binary directory
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         name: $TOR_VERSION-linux
-        path: ${{ env.FIRMWARE }}
+        path: ${{ env.BINARY }}
 
     - name: Generate release tag
       id: tag
@@ -152,7 +152,7 @@ jobs:
       run: |
         echo "![](https://img.shields.io/github/downloads/${{ github.repository }}/${{ steps.tag.outputs.release_tag }}/total?style=flat-square)" >> release.txt
 
-    - name: Upload firmware to release
+    - name: Upload binary to release
       uses: softprops/action-gh-release@v1
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
@@ -161,4 +161,4 @@ jobs:
         name: ${{ env.OPNAME }}
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
+        files: ${{ env.BINARY }}/*
