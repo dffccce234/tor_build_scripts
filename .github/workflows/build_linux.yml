@@ -68,6 +68,7 @@ jobs:
     - name: Generating tor.gpg
       run: |
         sudo rm -f gpg-keys/tor.gpg
+        sudo mkdir -p gpg-keys
         sudo touch gpg-keys/tor.gpg
         sudo gpg --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 514102454D0A87DB0767A1EBBE6A0531C18A9179
         sudo gpg --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys B74417EDDF22AC9F9E90F49142E86A2A11F48D36
