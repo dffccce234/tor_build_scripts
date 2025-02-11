@@ -17,66 +17,74 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-    - name: Initialization environment
-      run: |
-        sudo timedatectl set-timezone "$TZ"
-        sudo mkdir -p /mnt/workdir
-        sudo chown $USER:$GROUPS /mnt/workdir
+    # - name: Initialization environment
+    #   run: |
+    #     sudo timedatectl set-timezone "$TZ"
+    #     sudo mkdir -p /mnt/workdir
+    #     sudo chown $USER:$GROUPS /mnt/workdir
         
-    - name: Maximize Build Space
-      uses: easimon/maximize-build-space@master
-      with:
-        root-reserve-mb: 6144
-        swap-size-mb: 10240
-        remove-dotnet: 'true'
-        remove-android: 'true'
-        remove-haskell: 'true'
-        remove-codeql: 'true'
-        remove-docker-images: 'true'
-        build-mount-path: '/mnt/workdir'
+    # - name: Maximize Build Space
+    #   uses: easimon/maximize-build-space@master
+    #   with:
+    #     root-reserve-mb: 6144
+    #     swap-size-mb: 10240
+    #     remove-dotnet: 'true'
+    #     remove-android: 'true'
+    #     remove-haskell: 'true'
+    #     remove-codeql: 'true'
+    #     remove-docker-images: 'true'
+    #     build-mount-path: '/mnt/workdir'
        
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+    # - name: Checkout
+    #   uses: actions/checkout@v4
+    #   with:
+    #     fetch-depth: 0
 
-    - name: Install packages
-      env:
-        DEBIAN_FRONTEND: noninteractive
-      run: |
-        sudo rm -rf /etc/apt/sources.list.d/* 
-        sudo -E apt-get -qq update
-        for pkg in docker.io docker-doc docker-compose docker-compose-v2 containerd runc; do sudo apt-get remove $pkg; done
-        # Add Docker's official GPG key:
-        sudo -E apt-get -qq update
-        sudo -E apt-get -qq install ca-certificates curl
-        sudo install -m 0755 -d /etc/apt/keyrings
-        sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-        sudo chmod a+r /etc/apt/keyrings/docker.asc
+    # - name: Install packages
+    #   env:
+    #     DEBIAN_FRONTEND: noninteractive
+    #   run: |
+    #     sudo rm -rf /etc/apt/sources.list.d/* 
+    #     sudo -E apt-get -qq update
+    #     for pkg in docker.io docker-doc docker-compose docker-compose-v2 containerd runc; do sudo apt-get remove $pkg; done
+    #     # Add Docker's official GPG key:
+    #     sudo -E apt-get -qq update
+    #     sudo -E apt-get -qq install ca-certificates curl
+    #     sudo install -m 0755 -d /etc/apt/keyrings
+    #     sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    #     sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-        # Add the repository to Apt sources:
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-        sudo -E apt-get -qq update
-        sudo -E apt-get -qq install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-        sudo -E apt-get -qq autoremove --purge
-        sudo -E apt-get -qq clean
+    #     # Add the repository to Apt sources:
+    #     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    #     sudo -E apt-get -qq update
+    #     sudo -E apt-get -qq install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    #     sudo -E apt-get -qq autoremove --purge
+    #     sudo -E apt-get -qq clean
 
-    - name: test docker
-      run: |
-        sudo docker run hello-world
+    # - name: test docker
+    #   run: |
+    #     sudo docker run hello-world
 
-    - name: Generating tor.gpg
+    - name: Generating tor.gpg1
       run: |
         sudo rm -f gpg-keys/tor.gpg
+        echo 1
         sudo mkdir -p gpg-keys
+        echo 2
         sudo touch gpg-keys/tor.gpg
+        echo 3
         sudo gpg --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 514102454D0A87DB0767A1EBBE6A0531C18A9179
+        echo 4
         sudo gpg --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys B74417EDDF22AC9F9E90F49142E86A2A11F48D36
+        echo 5
         sudo gpg --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
-
+        echo 6
         sudo gpg --keyserver hkps://keyserver.ubuntu.com:443 --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
+        echo 7
         sudo gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
+        echo 8
         sudo gpg --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key 8657ABB260F056B1E5190839D9C4D26D0E604491
+        echo 9
         sudo gpg --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key B7C1C14360F353A36862E4D5231C84CDDCC69C45
         sudo gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key 5B2545DAB21995F4088CEFAA36CEE4DEB00CFE33
         sudo gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key C1F33DD8CE1D4CC613AF14DA9195C48241FBF7DD
