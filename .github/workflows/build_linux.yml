@@ -130,7 +130,7 @@ jobs:
         cd $GITHUB_WORKSPACE
         # source $GITHUB_WORKSPACE/env.sh
         # $GITHUB_WORKSPACE/build_linux.sh
-        echo 1 >tor-$TOR_VERSION-linux
+        echo 1 >tor-${{ env.TOR_VERSION }}-linux
         echo "status=success" >> $GITHUB_OUTPUT
         
     - name: Organize files
@@ -138,14 +138,14 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BINARY == 'true' && !cancelled()
       run: |
         cd $GITHUB_WORKSPACE
-        echo "BINARY=tor-$TOR_VERSION-linux" >> $GITHUB_ENV
+        echo "BINARY=tor-${{ env.TOR_VERSION }}-linux" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload binary directory
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: $TOR_VERSION-linux
+        name: tor-${{ env.TOR_VERSION }}-linux
         path: ${{ env.BINARY }}
 
     - name: Generate release tag
