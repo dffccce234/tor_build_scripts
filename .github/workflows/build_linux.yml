@@ -8,7 +8,7 @@ on:
 
 env:
   OPNAME: 'x86_64'
-  REPO_URL: https://github.com/dffccce234/tor_build_scripts
+  # REPO_URL: https://github.com/dffccce234/tor_build_scripts
   REPO_BRANCH: master
   TZ: Asia/Shanghai
 
@@ -104,8 +104,8 @@ jobs:
       working-directory: /mnt/workdir
       run: |
         df -hT $PWD
-        git clone --depth 1 $REPO_URL -b $REPO_BRANCH data
-        # ln -sf /mnt/workdir/data $GITHUB_WORKSPACE
+        # git clone --depth 1 $REPO_URL -b $REPO_BRANCH data
+        ln -sf /mnt/workdir $GITHUB_WORKSPACE
 
     # - name: Cache
     #   uses: stupidloud/cachewrtbuild@main
@@ -124,7 +124,6 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
         cd $GITHUB_WORKSPACE
-
         echo "FIRMWARE=tor-$TOR_VERSION-linux" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
