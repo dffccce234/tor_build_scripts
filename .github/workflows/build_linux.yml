@@ -128,9 +128,9 @@ jobs:
       id: compile
       run: |
         cd $GITHUB_WORKSPACE
-        # source $GITHUB_WORKSPACE/env.sh
-        # $GITHUB_WORKSPACE/build_linux.sh
-        echo 1 >tor-${{ env.TOR_VERSION }}-linux
+        source $GITHUB_WORKSPACE/env.sh
+        $GITHUB_WORKSPACE/build_linux.sh
+        # echo 1 >tor-${{ env.TOR_VERSION }}-linux
         echo "status=success" >> $GITHUB_OUTPUT
         
     - name: Organize files
