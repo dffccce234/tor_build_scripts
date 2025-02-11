@@ -117,6 +117,12 @@ jobs:
     #     mixkey: 'x86'
     #     prefix: 'openwrt'
 
+    - name: Get tor version
+      run: |
+        cd $GITHUB_WORKSPACE
+        TOR_VERSION=$(env.sh | grep " TOR_VERSION" | sed -e 's/export TOR_VERSION=//' -e 's/\"//g'| tail -1)
+        echo $TOR_VERSION >> $GITHUB_ENV
+
     - name: compile tor
       id: compile
       run: |
