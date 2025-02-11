@@ -12,6 +12,7 @@ env:
   REPO_BRANCH: master
   TZ: Asia/Shanghai
   UPLOAD_BINARY: 'true'
+  UPLOAD_RELEASE: 'true'
   
 
 jobs:
