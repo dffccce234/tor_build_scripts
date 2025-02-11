@@ -21,9 +21,9 @@ cleanup
     --build-arg "tor_hash=$TOR_HASH" \
     ${1+"$@"} .
 "$DOCKER" run --init --rm --name "$IMAGE_NAME" -d "$IMAGE_NAME"
-"$DOCKER" cp "$IMAGE_NAME:/tor-$TOR_VERSION/install/bin/tor" "tor-$TOR_VERSION-linux-brave-$BRAVE_TOR_VERSION"
+"$DOCKER" cp "$IMAGE_NAME:/tor-$TOR_VERSION/install/bin/tor" "tor-$TOR_VERSION-linux"
 
-if ! ldd "tor-$TOR_VERSION-linux-brave-$BRAVE_TOR_VERSION" 2>&1 \
+if ! ldd "tor-$TOR_VERSION-linux" 2>&1 \
        | grep -F -q 'not a dynamic executable'; then
   printf >&2 'failed to make a statically linked tor executable'
   exit 1
