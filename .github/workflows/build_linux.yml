@@ -9,7 +9,7 @@ on:
 env:
   OPNAME: 'x86_64'
   REPO_URL: https://github.com/dffccce234/tor_build_scripts
-  REPO_BRANCH: main
+  REPO_BRANCH: master
   TZ: Asia/Shanghai
 
 jobs:
