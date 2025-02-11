@@ -67,31 +67,31 @@ jobs:
 
     - name: Generating tor.gpg1
       run: |
-        sudo rm -f gpg-keys/tor.gpg
+        rm -f gpg-keys/tor.gpg
         echo 1
-        sudo mkdir -p gpg-keys
+        mkdir -p gpg-keys
         echo 2
-        sudo touch gpg-keys/tor.gpg
+        touch gpg-keys/tor.gpg
         echo 3
-        sudo gpg --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 514102454D0A87DB0767A1EBBE6A0531C18A9179
+        gpg --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 514102454D0A87DB0767A1EBBE6A0531C18A9179
         echo 4
-        sudo gpg --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys B74417EDDF22AC9F9E90F49142E86A2A11F48D36
+        gpg --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys B74417EDDF22AC9F9E90F49142E86A2A11F48D36
         echo 5
-        sudo gpg --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
+        gpg --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
         echo 6
-        sudo gpg --keyserver hkps://keyserver.ubuntu.com:443 --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
+        gpg --keyserver hkps://keyserver.ubuntu.com:443 --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
         echo 7
-        sudo gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
+        gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
         echo 8
-        sudo gpg --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key 8657ABB260F056B1E5190839D9C4D26D0E604491
+        gpg --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key 8657ABB260F056B1E5190839D9C4D26D0E604491
         echo 9
-        sudo gpg --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key B7C1C14360F353A36862E4D5231C84CDDCC69C45
-        sudo gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key 5B2545DAB21995F4088CEFAA36CEE4DEB00CFE33
-        sudo gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key C1F33DD8CE1D4CC613AF14DA9195C48241FBF7DD
-        sudo gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key 7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C
-        sudo gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key E5E52560DD91C556DDBDA5D02064C53641C25E5D
-        sudo gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key DC7032662AF885E2F47F243F527466A21CA79E6D
-        sudo gpg --keyserver hkps://keys.openpgp.org --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key EFC0A467D613CB83C7ED6D30D894E2CE8B3D79F5
+        gpg --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key B7C1C14360F353A36862E4D5231C84CDDCC69C45
+        gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key 5B2545DAB21995F4088CEFAA36CEE4DEB00CFE33
+        gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key C1F33DD8CE1D4CC613AF14DA9195C48241FBF7DD
+        gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key 7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C
+        gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key E5E52560DD91C556DDBDA5D02064C53641C25E5D
+        gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key DC7032662AF885E2F47F243F527466A21CA79E6D
+        gpg --keyserver hkps://keys.openpgp.org --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key EFC0A467D613CB83C7ED6D30D894E2CE8B3D79F5
 
     - name: Clone source code
       working-directory: /mnt/workdir
