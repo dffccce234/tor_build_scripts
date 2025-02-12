@@ -120,9 +120,14 @@ jobs:
     - name: Get tor version
       run: |
         cd $GITHUB_WORKSPACE
-        TOR_VERSION=$(cat env.sh | grep " TOR_VERSION" | sed -e 's/export TOR_VERSION=//' -e 's/\"//g'| tail -1)
+        # TOR_VERSION=$(cat env.sh | grep " TOR_VERSION" | sed -e 's/export TOR_VERSION=//' -e 's/\"//g'| tail -1)
+        TOR_VERSION=$(wget -qO- https://dist.torproject.org/ | grep -v 'alpha' | grep -oP 'tor-\K\d+\.\d+\.\d+(\.\d+)?' | sort -V | tail -n1)
+        TOR_HASH=$(wget -qO- https://dist.torproject.org/tor-0.4.8.14.tar.gz.sha256sum | cut -d' ' -f1 |  tail -n1)
         echo $TOR_VERSION
+        echo $TOR_HASH
         echo "TOR_VERSION=$TOR_VERSION" >> $GITHUB_ENV
+        export TOR_VERSION=$TOR_VERSION
+        exprtt TOR_HASH=$TOR_HASH
 
     - name: compile tor
       id: compile
