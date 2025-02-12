@@ -1,4 +1,4 @@
-name: build_linux
+name: build_linux_amd64
 
 on:
   schedule:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  OPNAME: 'x86_64'
+  OPNAME: 'linux_amd64'
   # REPO_URL: https://github.com/dffccce234/tor_build_scripts
   REPO_BRANCH: master
   TZ: Asia/Shanghai
@@ -136,8 +136,8 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE
         source $GITHUB_WORKSPACE/env.sh
-        $GITHUB_WORKSPACE/build_linux.sh
-        # echo 1 >tor-${{ env.TOR_VERSION }}-linux
+        $GITHUB_WORKSPACE/build_${{ OPNAME }}.sh
+        # echo 1 >tor_${{ env.TOR_VERSION }}_${{ OPNAME }}
         echo "status=success" >> $GITHUB_OUTPUT
         
     - name: Organize files
@@ -145,14 +145,14 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BINARY == 'true' && !cancelled()
       run: |
         cd $GITHUB_WORKSPACE
-        echo "BINARY=tor-${{ env.TOR_VERSION }}-linux" >> $GITHUB_ENV
+        echo "BINARY=tor_${{ env.TOR_VERSION }}_${{ OPNAME }}" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload binary directory
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: tor-${{ env.TOR_VERSION }}-linux
+        name: tor_${{ env.TOR_VERSION }}_${{ OPNAME }}
         path: ${{ env.BINARY }}
 
     - name: Generate release tag
