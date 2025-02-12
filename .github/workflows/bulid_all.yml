@@ -1,0 +1,181 @@
+name: build_all
+
+on:
+  schedule:
+    - cron: '1 0 * * 1'
+  repository_dispatch:
+  workflow_dispatch:
+
+env:
+  OPNAME: 'x86_64'
+  # REPO_URL: https://github.com/dffccce234/tor_build_scripts
+  REPO_BRANCH: master
+  TZ: Asia/Shanghai
+  UPLOAD_BINARY: 'true'
+  UPLOAD_RELEASE: 'true'
+  
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Initialization environment
+      run: |
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p /mnt/workdir
+        sudo chown $USER:$GROUPS /mnt/workdir
+        
+    - name: Maximize Build Space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 6144
+        swap-size-mb: 10240
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+        remove-codeql: 'true'
+        remove-docker-images: 'true'
+        build-mount-path: '/mnt/workdir'
+       
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install packages
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* 
+        sudo -E apt-get -qq update
+        for pkg in docker.io docker-doc docker-compose docker-compose-v2 containerd runc; do sudo apt-get remove $pkg; done
+        # Add Docker's official GPG key:
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install ca-certificates curl
+        sudo install -m 0755 -d /etc/apt/keyrings
+        sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+        sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+        # Add the repository to Apt sources:
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+
+    - name: test docker
+      run: |
+        sudo docker run hello-world
+
+    # - name: Generating tor.gpg1
+    #   run: |
+    #     rm -f gpg-keys/tor.gpg
+    #     echo 1
+    #     mkdir -p gpg-keys
+    #     echo 2
+    #     touch gpg-keys/tor.gpg
+    #     echo 3
+    #     gpg --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 514102454D0A87DB0767A1EBBE6A0531C18A9179
+    #     echo 4
+    #     gpg --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys B74417EDDF22AC9F9E90F49142E86A2A11F48D36
+    #     echo 5
+    #     gpg --no-default-keyring --keyring gpg-keys/tor.gpg --keyserver hkps://keys.openpgp.org --recv-keys 2133BC600AB133E1D826D173FE43009C4607B1FB
+    #     echo 6
+    #     gpg --keyserver hkps://keyserver.ubuntu.com:443 --recv-keys 9E3AC83A27974B84D1B3401DB86086848EF8686D
+    #     echo 7
+    #     gpg --output gpg-keys/libevent.gpg --export 9E3AC83A27974B84D1B3401DB86086848EF8686D
+    #     echo 8
+    #     gpg --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key 8657ABB260F056B1E5190839D9C4D26D0E604491
+    #     echo 9
+    #     gpg --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key B7C1C14360F353A36862E4D5231C84CDDCC69C45
+    #     echo 10
+    #     gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key 5B2545DAB21995F4088CEFAA36CEE4DEB00CFE33
+    #     echo 11
+    #     gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key C1F33DD8CE1D4CC613AF14DA9195C48241FBF7DD
+    #     echo 12
+    #     gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key 7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C
+    #     echo 13
+    #     gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key E5E52560DD91C556DDBDA5D02064C53641C25E5D
+    #     echo 14
+    #     gpg --keyserver hkps://keyserver.ubuntu.com --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key DC7032662AF885E2F47F243F527466A21CA79E6D
+    #     echo 15
+    #     gpg --keyserver hkps://keys.openpgp.org --no-default-keyring --keyring gpg-keys/openssl.gpg --recv-key EFC0A467D613CB83C7ED6D30D894E2CE8B3D79F5
+    #     echon 16
+        
+    - name: Clone source code
+      working-directory: /mnt/workdir
+      run: |
+        df -hT $PWD
+        # git clone --depth 1 $REPO_URL -b $REPO_BRANCH data
+        ln -sf /mnt/workdir $GITHUB_WORKSPACE
+
+    # - name: Cache
+    #   uses: stupidloud/cachewrtbuild@main
+    #   with:
+    #     ccache: 'true'
+    #     mixkey: 'x86'
+    #     prefix: 'openwrt'
+
+    - name: Get tor version
+      run: |
+        cd $GITHUB_WORKSPACE
+        # TOR_VERSION=$(cat env.sh | grep " TOR_VERSION" | sed -e 's/export TOR_VERSION=//' -e 's/\"//g'| tail -1)
+        TOR_VERSION=$(wget -qO- https://dist.torproject.org/ | grep -v 'alpha' | grep -oP 'tor-\K\d+\.\d+\.\d+(\.\d+)?' | sort -V | tail -n1)
+        TOR_HASH=$(wget -qO- https://dist.torproject.org/tor-0.4.8.14.tar.gz.sha256sum | cut -d' ' -f1 |  tail -n1)
+        echo $TOR_VERSION
+        echo $TOR_HASH
+        echo "TOR_VERSION=$TOR_VERSION" >> $GITHUB_ENV
+        echo -n $'\n' >> env.sh
+        echo "export TOR_VERSION=$TOR_VERSION" >> env.sh
+        echo -n $'\n' >> env.sh
+        echo "export TOR_HASH=$TOR_HASH" >> env.sh
+
+    - name: compile tor
+      id: compile
+      run: |
+        cd $GITHUB_WORKSPACE
+        source $GITHUB_WORKSPACE/env.sh
+        $GITHUB_WORKSPACE/build_linux.sh
+        # echo 1 >tor-${{ env.TOR_VERSION }}-linux
+        echo "status=success" >> $GITHUB_OUTPUT
+        
+    - name: Organize files
+      id: organize
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BINARY == 'true' && !cancelled()
+      run: |
+        cd $GITHUB_WORKSPACE
+        echo "BINARY=tor-${{ env.TOR_VERSION }}-linux" >> $GITHUB_ENV
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: Upload binary directory
+      uses: actions/upload-artifact@main
+      if: steps.organize.outputs.status == 'success' && !cancelled()
+      with:
+        name: tor-${{ env.TOR_VERSION }}-linux
+        path: ${{ env.BINARY }}
+
+    - name: Generate release tag
+      id: tag
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+        echo "== Time：$(date +'%Y-%m-%d %H:%M:%S') =="
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M%S")" >> $GITHUB_OUTPUT
+        touch release.txt
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: Generate release body
+      if: steps.compile.outputs.status == 'success' && !cancelled()
+      run: |
+        echo "![](https://img.shields.io/github/downloads/${{ github.repository }}/${{ steps.tag.outputs.release_tag }}/total?style=flat-square)" >> release.txt
+
+    - name: Upload binary to release
+      uses: softprops/action-gh-release@v1
+      if: steps.tag.outputs.status == 'success' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: ${{ env.OPNAME }}
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        body_path: release.txt
+        files: ${{ env.BINARY }}
