@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  OPNAME: 'x86_64'
+  OPNAME: 'arm64'
   # REPO_URL: https://github.com/dffccce234/tor_build_scripts
   REPO_BRANCH: master
   TZ: Asia/Shanghai
@@ -152,7 +152,7 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: tor-${{ env.TOR_VERSION }}-linux
+        name: tor-${{ env.TOR_VERSION }}-linux-arm64
         path: ${{ env.BINARY }}
 
     - name: Generate release tag
