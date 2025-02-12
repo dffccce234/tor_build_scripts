@@ -137,7 +137,7 @@ jobs:
         cd $GITHUB_WORKSPACE
         source $GITHUB_WORKSPACE/env.sh
         $GITHUB_WORKSPACE/build_mingw.sh
-        # echo 1 >tor-${{ env.TOR_VERSION }}-linux-win32.exe
+        # echo 1 >tor-${{ env.TOR_VERSION }}-win32.exe
         echo "status=success" >> $GITHUB_OUTPUT
         
     - name: Organize files
@@ -145,14 +145,14 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BINARY == 'true' && !cancelled()
       run: |
         cd $GITHUB_WORKSPACE
-        echo "BINARY=tor-${{ env.TOR_VERSION }}-linux-win32.exe" >> $GITHUB_ENV
+        echo "BINARY=tor-${{ env.TOR_VERSION }}-win32.exe" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload binary directory
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: tor-${{ env.TOR_VERSION }}-linux-win32.exe
+        name: tor-${{ env.TOR_VERSION }}-win32.exe
         path: ${{ env.BINARY }}
 
     - name: Generate release tag
