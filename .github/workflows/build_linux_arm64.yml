@@ -1,4 +1,4 @@
-name: build_linux_arm
+name: build_linux_arm64
 
 on:
   schedule:
