@@ -126,8 +126,8 @@ jobs:
         echo $TOR_VERSION
         echo $TOR_HASH
         echo "TOR_VERSION=$TOR_VERSION" >> $GITHUB_ENV
-        export TOR_VERSION=$TOR_VERSION
-        export TOR_HASH=$TOR_HASH
+        echo "export TOR_VERSION=$TOR_VERSION" >> env.sh
+        echo "export TOR_HASH=$TOR_HASH" >> env.sh
 
     - name: compile tor
       id: compile
