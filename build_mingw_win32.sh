@@ -21,4 +21,4 @@ cleanup
     --build-arg "tor_hash=$TOR_HASH" \
     ${1+"$@"} .
 "$DOCKER" run --init --rm --name "$IMAGE_NAME" -d "$IMAGE_NAME"
-"$DOCKER" cp "$IMAGE_NAME:/tor-$TOR_VERSION/install/bin/tor.exe" "tor-$TOR_VERSION-win32.exe"
+"$DOCKER" cp "$IMAGE_NAME:/tor-$TOR_VERSION/install/bin/tor.exe" "tor_$TOR_VERSION_mingw_win32.exe"
