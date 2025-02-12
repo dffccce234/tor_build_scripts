@@ -141,7 +141,15 @@ jobs:
         cd $GITHUB_WORKSPACE
         source $GITHUB_WORKSPACE/env.sh
         $GITHUB_WORKSPACE/build_${{ matrix.platform }}.sh
+        
         # echo 1 >tor_${{ env.TOR_VERSION }}_${{ matrix.platform }}
+        
+        if [[ "${{ matrix.platform }}" == "mingw_win32" ]]; then
+            echo "TAIL=${{ matrix.platform }}.exe" >> $GITHUB_ENV
+        else
+            echo "TAIL=${{ matrix.platform }}" >> $GITHUB_ENV
+        fi
+        
         echo "status=success" >> $GITHUB_OUTPUT
         
     - name: Organize files
@@ -149,14 +157,14 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BINARY == 'true' && !cancelled()
       run: |
         cd $GITHUB_WORKSPACE
-        echo "BINARY=tor_${{ env.TOR_VERSION }}_${{ matrix.platform }}" >> $GITHUB_ENV
+        echo "BINARY=tor_${{ env.TOR_VERSION }}_${{ env.TAIL }}" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload binary directory
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: tor_${{ env.TOR_VERSION }}_${{ matrix.platform }}
+        name: tor_${{ env.TOR_VERSION }}_${{ env.TAIL }}
         path: ${{ env.BINARY }}
 
     - name: Generate release tag
@@ -179,7 +187,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: tor_${{ env.TOR_VERSION }}_${{ matrix.platform }}
+        name: tor_${{ env.TOR_VERSION }}_${{ env.TAIL }}
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
         files: ${{ env.BINARY }}
