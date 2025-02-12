@@ -21,7 +21,7 @@ cleanup
     --build-arg "tor_hash=$TOR_HASH" \
     ${1+"$@"} .
 "$DOCKER" run --init --rm --name "$IMAGE_NAME" -d "$IMAGE_NAME"
-"$DOCKER" cp "$IMAGE_NAME:/tor-$TOR_VERSION/install/bin/tor" "tor-$TOR_VERSION-linux"
+"$DOCKER" cp "$IMAGE_NAME:/tor-$TOR_VERSION/install/bin/tor" "tor_$TOR_VERSION_linux_amd64"
 
 if ! ldd "tor-$TOR_VERSION-linux" 2>&1 \
        | grep -F -q 'not a dynamic executable'; then
