@@ -17,6 +17,9 @@ env:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        platform: [linux_amd64, linux_arm64, mingw-win32]
     runs-on: ubuntu-20.04
 
     steps:
@@ -136,8 +139,8 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE
         source $GITHUB_WORKSPACE/env.sh
-        $GITHUB_WORKSPACE/build_linux.sh
-        # echo 1 >tor-${{ env.TOR_VERSION }}-linux
+        $GITHUB_WORKSPACE/build_${{ matrix.platform }}.sh
+        # echo 1 >tor_${{ env.TOR_VERSION }}_${{ matrix.platform }}
         echo "status=success" >> $GITHUB_OUTPUT
         
     - name: Organize files
@@ -145,14 +148,14 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BINARY == 'true' && !cancelled()
       run: |
         cd $GITHUB_WORKSPACE
-        echo "BINARY=tor-${{ env.TOR_VERSION }}-linux" >> $GITHUB_ENV
+        echo "BINARY=tor_${{ env.TOR_VERSION }}_${{ matrix.platform }}" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload binary directory
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: tor-${{ env.TOR_VERSION }}-linux
+        name: tor_${{ env.TOR_VERSION }}_${{ matrix.platform }}
         path: ${{ env.BINARY }}
 
     - name: Generate release tag
@@ -175,7 +178,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: ${{ env.OPNAME }}
+        name: tor_${{ env.TOR_VERSION }}_${{ matrix.platform }}
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
         files: ${{ env.BINARY }}
