@@ -1,4 +1,4 @@
-name: build_linux_mingw
+name: build_mingw
 
 on:
   schedule:
@@ -136,7 +136,7 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE
         source $GITHUB_WORKSPACE/env.sh
-        $GITHUB_WORKSPACE/build_linux_mingw.sh
+        $GITHUB_WORKSPACE/build_mingw.sh
         # echo 1 >tor-${{ env.TOR_VERSION }}-linux-win32.exe
         echo "status=success" >> $GITHUB_OUTPUT
         
