@@ -53,7 +53,7 @@ jobs:
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* 
         sudo -E apt-get -qq update
-        for pkg in docker.io docker-doc docker-compose docker-compose-v2 containerd runc; do sudo apt-get remove $pkg; done
+        for pkg in docker.io  docker-compose docker-compose-v2 containerd runc; do sudo apt-get remove $pkg; done
         # Add Docker's official GPG key:
         sudo -E apt-get -qq update
         sudo -E apt-get -qq install ca-certificates curl
